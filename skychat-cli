@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const SkyChatCLI = require('../lib/SkyChatCLI').SkyChatCLI;
+const SkyChatCLI = require('./lib/SkyChatCLI').SkyChatCLI;
 
 const [ , , HOST, USER, PASS] = process.argv;
 

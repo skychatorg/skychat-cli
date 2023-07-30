@@ -7,9 +7,37 @@ export class SkyChatCLI {
 
     public static readonly MESSAGE_INPUT_SIZE: number = 3;
 
+    public static readonly SIDEBAR_WIDTH: number = 24;
+
+    public static readonly BOX_DEFAULT_OPTIONS: blessed.Widgets.BoxOptions = {
+        scrollable: true,
+        alwaysScroll: true,
+        scrollbar: {
+            ch: ' ',
+            track: {
+                bg: 'cyan'
+            },
+        },
+        border: {
+            type: 'line'
+        },
+        style: {
+            fg: 'white',
+            bg: 'black',
+            border: {
+                fg: '#f0f0f0'
+            },
+            scrollbar: {
+                bg: 'blue'
+            },
+        },
+    };
+
     private client: SkyChatClient;
 
     private cliScreen: blessed.Widgets.Screen;
+    private cliRoomListBox: blessed.Widgets.ListElement;
+    private cliUserListBox: blessed.Widgets.ListElement;
     private cliMessageBox: blessed.Widgets.BoxElement;
     private cliMessageInput: blessed.Widgets.TextboxElement;
 
@@ -21,36 +49,33 @@ export class SkyChatCLI {
         this.cliMessageBox = blessed.box({
             top: 0,
             left: 0,
-            width: '100%',
+            width: `100%-${SkyChatCLI.SIDEBAR_WIDTH}`,
             height: `100%-${SkyChatCLI.MESSAGE_INPUT_SIZE}`,
-            scrollable: true,
-            alwaysScroll: true,
             mouse: true,
-            border: {
-                type: 'line'
-            },
-            scrollbar: {
-                ch: ' ',
-                track: {
-                    bg: 'cyan'
-                },
-            },
-            style: {
-                fg: 'white',
-                bg: 'black',
-                border: {
-                    fg: '#f0f0f0'
-                },
-                scrollbar: {
-                    bg: 'blue'
-                },
-            },
+            ...SkyChatCLI.BOX_DEFAULT_OPTIONS,
+        });
+        this.cliRoomListBox = blessed.list({
+            top: 0,
+            left: `100%-${SkyChatCLI.SIDEBAR_WIDTH}`,
+            width: SkyChatCLI.SIDEBAR_WIDTH,
+            height: `50%`,
+            mouse: true,
+            interactive: false,
+            ...SkyChatCLI.BOX_DEFAULT_OPTIONS,
+        });
+        this.cliUserListBox = blessed.list({
+            bottom: 0,
+            left: `100%-${SkyChatCLI.SIDEBAR_WIDTH}`,
+            width: SkyChatCLI.SIDEBAR_WIDTH,
+            height: `50%`,
+            mouse: true,
+            ...SkyChatCLI.BOX_DEFAULT_OPTIONS,
         });
         this.cliMessageInput = blessed.textbox({
           bottom: 0,
-          left: 1,
+          left: 0,
+          width: `100%-${SkyChatCLI.SIDEBAR_WIDTH}-2`,
           height: SkyChatCLI.MESSAGE_INPUT_SIZE,
-          width: '100%-2',
           keys: true,
           mouse: true,
           inputOnFocus: true,
@@ -59,6 +84,8 @@ export class SkyChatCLI {
           }
         });
         this.cliScreen.append(this.cliMessageBox);
+        this.cliScreen.append(this.cliRoomListBox);
+        this.cliScreen.append(this.cliUserListBox);
         this.cliScreen.append(this.cliMessageInput);
         this._bind();
     }
@@ -70,14 +97,26 @@ export class SkyChatCLI {
         this.client.on('messages', (messages: SanitizedMessage[]) => {
             messages.forEach(this.printMessage.bind(this));
         });
-        this.cliScreen.key(['escape', 'q', 'C-c'], (ch, key) => (process.exit(0)));
-        this.cliMessageInput.key(['escape', 'q', 'C-c'], (ch, key) => (process.exit(0)));
+        this.client.on('room-list', this.renderRoomList.bind(this));
+        this.client.on('join-room', this.renderRoomList.bind(this));
+        this.client.on('connected-list', this.renderUserList.bind(this));
+
+        // Exit on ctrl+c, esc, or q
+        this.cliScreen.key(['escape', 'C-c'], () => (process.exit(0)));
+        this.cliMessageInput.key(['escape', 'C-c'], () => (process.exit(0)));
+
+        // Submit message on enter
         this.cliMessageInput.key('enter', this.sendMessage.bind(this));
+
+        // On select room
+        this.cliRoomListBox.on('select', (_item, index) => {
+            this.client.join(this.client.state.rooms[index].id);
+        });
     }
 
     connect(credentials?: { username: string, password: string }): Promise<void> {
         const isDataReceived = () => {
-            return this.client.state.rooms.length > 0 && !!this.client.state.currentRoom;
+            return this.client.state.rooms.length > 0 && this.client.state.currentRoomId === null;
         };
 
         return new Promise(resolve => {
@@ -113,9 +152,29 @@ export class SkyChatCLI {
     }
 
     sendMessage() {
+        // Retrieve message and clear input
         const message = this.cliMessageInput.getValue();
         this.cliMessageInput.clearValue();
         this.cliScreen.render();
+
+        // Send message
         this.client.sendMessage(message);
+    }
+
+    renderRoomList() {
+        this.cliRoomListBox.setItems(this.client.state.rooms.map(room => {
+            // If room is current room, add a star
+            const star = room.id === this.client.state.currentRoomId ? '*' : ' ';
+            return `${star} ${room.name}`;
+        }));
+        this.cliScreen.render();
+    }
+
+    renderUserList() {
+        this.cliUserListBox.setItems(this.client.state.connectedList.map(connectedUser => {
+            const star = connectedUser.deadSinceTime ? '~' : ' ';
+            return `${star} ${connectedUser.user.username}`;
+        }));
+        this.cliScreen.render();
     }
 }
