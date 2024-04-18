@@ -1,19 +1,29 @@
 # SkyChatCLI
 
-Install
+## Install
 
 ```bash
 npm i -g skychat-cli
 ```
 
-Launch
+## Launch
 
 Logging as `user` with password `password` on instance `some-skychat.com`
+
 ```bash
-skychat-cli some-skychat.com user password
+SKYCHAT_USER=user SKYCHAT_PASSWORD=password skychat-cli -h some-skychat.com
 ```
 
-Logging as guest
+All options can be passed either through environment or CLI args
+
 ```bash
-skychat-cli some-skychat.com
+skychat-cli -h some-skychat.com -u user -p password
+# or
+SKYCHAT_HOST=skych.at SKYCHAT_USER=user SKYCHAT_PASSWORD=password skychat-cli
+```
+
+You can log in as guest by not specifying user/password
+
+```bash
+skychat-cli -h some-skychat.com
 ```
