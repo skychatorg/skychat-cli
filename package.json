@@ -1,6 +1,6 @@
 {
   "name": "skychat-cli",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Connect to a SkyChat instance using CLI",
   "main": "lib/index.js",
   "files": [
@@ -20,8 +20,8 @@
     "skychat": "^1.0.4"
   },
   "devDependencies": {
-    "@types/blessed": "^0.1.22",
-    "nodemon": "^3.0.1",
-    "typescript": "^5.1.6"
+    "@types/blessed": "^0.1.25",
+    "nodemon": "^3.1.0",
+    "typescript": "^5.4.5"
   }
 }

@@ -126,7 +126,11 @@ export class SkyChatCLI {
                 }
 
                 // If yes, join first room
-                this.client.join(this.client.state.rooms[0].id);
+                const availableRoom = this.client.state.rooms.find(room => ! room.isPrivate && ! room.plugins.roomprotect);
+                if (! availableRoom) {
+                    throw new Error('No available room to join');
+                }
+                this.client.join(availableRoom.id);
 
                 // If credentials are provided, login
                 if (credentials?.username && credentials?.password) {
