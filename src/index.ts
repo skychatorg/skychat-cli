@@ -1,10 +1,15 @@
 #!/usr/bin/env node
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const SkyChatCLI = require('../lib/SkyChatCLI').SkyChatCLI;
 
-const [ , , HOST, USER, PASS] = process.argv;
+const [, , HOST, USER, PASS] = process.argv;
 
-(async () => {
-    await new SkyChatCLI(`wss://${HOST}/ws`)
-        .connect({ username: USER, password: PASS })
-})();
+export async function main() {
+    const skyChatCli = new SkyChatCLI(`wss://${HOST}/ws`);
+
+    await skyChatCli.connect({
+        username: USER,
+        password: PASS,
+    });
+}

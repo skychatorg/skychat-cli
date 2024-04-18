@@ -2,9 +2,7 @@ import blessed from 'blessed';
 import { SkyChatClient } from 'skychat';
 import { SanitizedMessage } from 'skychat/build/server';
 
-
 export class SkyChatCLI {
-
     public static readonly MESSAGE_INPUT_SIZE: number = 3;
 
     public static readonly SIDEBAR_WIDTH: number = 24;
@@ -15,20 +13,20 @@ export class SkyChatCLI {
         scrollbar: {
             ch: ' ',
             track: {
-                bg: 'cyan'
+                bg: 'cyan',
             },
         },
         border: {
-            type: 'line'
+            type: 'line',
         },
         style: {
             fg: 'white',
             bg: 'black',
             border: {
-                fg: '#f0f0f0'
+                fg: '#f0f0f0',
             },
             scrollbar: {
-                bg: 'blue'
+                bg: 'blue',
             },
         },
     };
@@ -41,7 +39,7 @@ export class SkyChatCLI {
     private cliMessageBox: blessed.Widgets.BoxElement;
     private cliMessageInput: blessed.Widgets.TextboxElement;
 
-    constructor(url: string, ) {
+    constructor(url: string) {
         this.client = new SkyChatClient(url);
         this.cliScreen = blessed.screen({
             title: 'SkyChat CLI',
@@ -58,7 +56,7 @@ export class SkyChatCLI {
             top: 0,
             left: `100%-${SkyChatCLI.SIDEBAR_WIDTH}`,
             width: SkyChatCLI.SIDEBAR_WIDTH,
-            height: `50%`,
+            height: '50%',
             mouse: true,
             interactive: false,
             ...SkyChatCLI.BOX_DEFAULT_OPTIONS,
@@ -67,21 +65,21 @@ export class SkyChatCLI {
             bottom: 0,
             left: `100%-${SkyChatCLI.SIDEBAR_WIDTH}`,
             width: SkyChatCLI.SIDEBAR_WIDTH,
-            height: `50%`,
+            height: '50%',
             mouse: true,
             ...SkyChatCLI.BOX_DEFAULT_OPTIONS,
         });
         this.cliMessageInput = blessed.textbox({
-          bottom: 0,
-          left: 0,
-          width: `100%-${SkyChatCLI.SIDEBAR_WIDTH}-2`,
-          height: SkyChatCLI.MESSAGE_INPUT_SIZE,
-          keys: true,
-          mouse: true,
-          inputOnFocus: true,
-          border: {
-            type: 'line'
-          }
+            bottom: 0,
+            left: 0,
+            width: `100%-${SkyChatCLI.SIDEBAR_WIDTH}-2`,
+            height: SkyChatCLI.MESSAGE_INPUT_SIZE,
+            keys: true,
+            mouse: true,
+            inputOnFocus: true,
+            border: {
+                type: 'line',
+            },
         });
         this.cliScreen.append(this.cliMessageBox);
         this.cliScreen.append(this.cliRoomListBox);
@@ -102,8 +100,8 @@ export class SkyChatCLI {
         this.client.on('connected-list', this.renderUserList.bind(this));
 
         // Exit on ctrl+c, esc, or q
-        this.cliScreen.key(['escape', 'C-c'], () => (process.exit(0)));
-        this.cliMessageInput.key(['escape', 'C-c'], () => (process.exit(0)));
+        this.cliScreen.key(['escape', 'C-c'], () => process.exit(0));
+        this.cliMessageInput.key(['escape', 'C-c'], () => process.exit(0));
 
         // Submit message on enter
         this.cliMessageInput.key('enter', this.sendMessage.bind(this));
@@ -114,20 +112,28 @@ export class SkyChatCLI {
         });
     }
 
-    connect(credentials?: { username: string, password: string }): Promise<void> {
+    connect(credentials?: {
+        username: string;
+        password: string;
+    }): Promise<void> {
         const isDataReceived = () => {
-            return this.client.state.rooms.length > 0 && this.client.state.currentRoomId === null;
+            return (
+                this.client.state.rooms.length > 0 &&
+                this.client.state.currentRoomId === null
+            );
         };
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const continueWhenReady = () => {
-                if (! isDataReceived()) {
+                if (!isDataReceived()) {
                     return;
                 }
 
                 // If yes, join first room
-                const availableRoom = this.client.state.rooms.find(room => ! room.isPrivate && ! room.plugins.roomprotect);
-                if (! availableRoom) {
+                const availableRoom = this.client.state.rooms.find(
+                    (room) => !room.isPrivate && !room.plugins.roomprotect,
+                );
+                if (!availableRoom) {
                     throw new Error('No available room to join');
                 }
                 this.client.join(availableRoom.id);
@@ -135,22 +141,26 @@ export class SkyChatCLI {
                 // If credentials are provided, login
                 if (credentials?.username && credentials?.password) {
                     this.client.once('set-user', resolve);
-                    this.client.login(credentials.username, credentials.password);
+                    this.client.login(
+                        credentials.username,
+                        credentials.password,
+                    );
                 } else {
                     // Otherwise, nothing to do anymore
                     resolve();
                 }
-            }
-    
+            };
+
             this.client.connect();
             this.client.once('room-list', continueWhenReady);
             this.client.once('join-room', continueWhenReady);
         });
     }
 
-
     printMessage(message: SanitizedMessage) {
-        this.cliMessageBox.pushLine(`[${message.user.username}] ${message.content}`);
+        this.cliMessageBox.pushLine(
+            `[${message.user.username}] ${message.content}`,
+        );
         this.cliMessageBox.scrollTo(this.cliMessageBox.getScrollHeight());
         this.cliScreen.render();
     }
@@ -166,19 +176,24 @@ export class SkyChatCLI {
     }
 
     renderRoomList() {
-        this.cliRoomListBox.setItems(this.client.state.rooms.map(room => {
-            // If room is current room, add a star
-            const star = room.id === this.client.state.currentRoomId ? '*' : ' ';
-            return `${star} ${room.name}`;
-        }));
+        this.cliRoomListBox.setItems(
+            this.client.state.rooms.map((room) => {
+                // If room is current room, add a star
+                const star =
+                    room.id === this.client.state.currentRoomId ? '*' : ' ';
+                return `${star} ${room.name}`;
+            }),
+        );
         this.cliScreen.render();
     }
 
     renderUserList() {
-        this.cliUserListBox.setItems(this.client.state.connectedList.map(connectedUser => {
-            const star = connectedUser.deadSinceTime ? '~' : ' ';
-            return `${star} ${connectedUser.user.username}`;
-        }));
+        this.cliUserListBox.setItems(
+            this.client.state.connectedList.map((connectedUser) => {
+                const star = connectedUser.deadSinceTime ? '~' : ' ';
+                return `${star} ${connectedUser.user.username}`;
+            }),
+        );
         this.cliScreen.render();
     }
 }
