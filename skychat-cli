@@ -1,10 +1,7 @@
 #!/usr/bin/env node
 
-const SkyChatCLI = require('./lib/SkyChatCLI').SkyChatCLI;
-
-const [ , , HOST, USER, PASS] = process.argv;
+const main = require('./lib').main;
 
 (async () => {
-    await new SkyChatCLI(`wss://${HOST}/ws`)
-        .connect({ username: USER, password: PASS })
+    await main();
 })();
