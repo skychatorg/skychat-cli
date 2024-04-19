@@ -1,6 +1,22 @@
 import blessed from 'blessed';
 import { SkyChatClient } from 'skychat';
-import { SanitizedMessage } from 'skychat/build/server';
+import { AuthToken, SanitizedMessage } from 'skychat/build/server';
+import { saveToken } from './token';
+
+type ConnectCredentials = {
+    mode: 'credentials';
+    user: string;
+    password: string;
+};
+
+type ConnectToken = {
+    mode: 'token';
+    token: AuthToken;
+};
+
+type ConnectGuest = {
+    mode: 'guest';
+};
 
 export class SkyChatCLI {
     public static readonly MESSAGE_INPUT_SIZE: number = 3;
@@ -98,6 +114,7 @@ export class SkyChatCLI {
         this.client.on('room-list', this.renderRoomList.bind(this));
         this.client.on('join-room', this.renderRoomList.bind(this));
         this.client.on('connected-list', this.renderUserList.bind(this));
+        this.client.on('auth-token', saveToken);
 
         // Exit on ctrl+c, esc, or q
         this.cliScreen.key(['escape', 'C-c'], () => process.exit(0));
@@ -112,20 +129,19 @@ export class SkyChatCLI {
         });
     }
 
-    connect(credentials?: {
-        username: string;
-        password: string;
-    }): Promise<void> {
-        const isDataReceived = () => {
-            return (
-                this.client.state.rooms.length > 0 &&
-                this.client.state.currentRoomId === null
-            );
-        };
-
+    connect(
+        credentials: ConnectCredentials | ConnectToken | ConnectGuest,
+    ): Promise<void> {
         return new Promise((resolve) => {
+            const isAllDataReceived = () => {
+                return (
+                    this.client.state.rooms.length > 0 &&
+                    this.client.state.currentRoomId === null
+                );
+            };
+
             const continueWhenReady = () => {
-                if (!isDataReceived()) {
+                if (!isAllDataReceived()) {
                     return;
                 }
 
@@ -139,14 +155,12 @@ export class SkyChatCLI {
                 this.client.join(availableRoom.id);
 
                 // If credentials are provided, login
-                if (credentials?.username && credentials?.password) {
+                if (credentials.mode === 'credentials') {
                     this.client.once('set-user', resolve);
-                    this.client.login(
-                        credentials.username,
-                        credentials.password,
-                    );
+                    this.client.login(credentials.user, credentials.password);
+                } else if (credentials.mode === 'token') {
+                    this.client.setToken(credentials.token, availableRoom.id);
                 } else {
-                    // Otherwise, nothing to do anymore
                     resolve();
                 }
             };
