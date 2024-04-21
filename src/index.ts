@@ -1,32 +1,43 @@
-import { SkyChatCLI } from './SkyChatCLI';
+import { SkyChatClient } from 'skychat';
 import { getOptions } from './options';
+import { connect, getEndPointUrl } from './skychat';
 import { loadToken } from './token';
-import { SkyChatOption } from './types';
+import { SkyChatOption, SkyChatOptions } from './types';
+import { SkyChatCLI } from './render/SkyChatCLI';
 
 export async function main() {
     const options = getOptions();
 
     // Build the endpoint URL & initialize the SkyChatCLI
-    const endpointUrl = `${options[SkyChatOption.Protocol]}://${options[SkyChatOption.Host]}/ws`;
-    const skyChatCli = new SkyChatCLI(endpointUrl);
+    const url = getEndPointUrl(options[SkyChatOption.Protocol], options[SkyChatOption.Host]);
+    const client = new SkyChatClient(url);
 
-    // Choose whether to log in as guest, as user with username & password, or as user with token
+    await autoConnect(client, options);
+
+    const skyChatCli = new SkyChatCLI(client);
+    skyChatCli.render();
+}
+
+async function autoConnect(client: SkyChatClient, options: SkyChatOptions) {
     if (options[SkyChatOption.User] && options[SkyChatOption.Password]) {
-        return skyChatCli.connect({
+        await connect(client, {
             mode: 'credentials',
             user: options[SkyChatOption.User],
             password: options[SkyChatOption.Password],
         });
+        return;
     }
 
     const token = await loadToken();
     if (token) {
-        return skyChatCli.connect({
+        await connect(client, {
             mode: 'token',
             token,
         });
+        return;
     }
-    return skyChatCli.connect({
+
+    await connect(client, {
         mode: 'guest',
     });
 }
