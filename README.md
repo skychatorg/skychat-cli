@@ -23,7 +23,7 @@ All options can be passed either through environment or CLI args
 ```bash
 skychat-cli -h some-skychat.com -u user -p password
 # or
-SKYCHAT_HOST=skych.at SKYCHAT_USER=user SKYCHAT_PASSWORD=password skychat-cli
+SKYCHAT_HOST=some-skychat.com SKYCHAT_USER=user SKYCHAT_PASSWORD=password skychat-cli
 ```
 
 You can log in as guest by not specifying user/password
