@@ -1,5 +1,9 @@
 # SkyChatCLI
 
+Command-line interface to connect to your favorite SkyChat instance
+
+<img src="doc/capture.png" width="100%" />
+
 ## Install
 
 ```bash
