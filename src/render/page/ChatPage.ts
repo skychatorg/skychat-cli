@@ -53,6 +53,8 @@ export class ChatPage extends Page {
         this.screen.append(this.messageInput.getElement());
 
         this.screen.key(['escape', 'C-c'], () => process.exit(0));
+
+        this.messageInput.getElement().focus();
     }
 
     render(): void {

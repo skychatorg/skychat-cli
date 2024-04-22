@@ -3,35 +3,28 @@ import { BOX_DEFAULT_OPTIONS } from '../../constants';
 import { Component } from './Component';
 import { Page } from '../page/Page';
 
-export class MessageInput implements Component {
-    private readonly page: Page;
-
-    private readonly element: blessed.Widgets.TextboxElement;
-
+export class MessageInput extends Component<blessed.Widgets.TextboxElement> {
     constructor(page: Page, options: Partial<blessed.Widgets.TextboxOptions>) {
-        this.page = page;
-
-        this.element = blessed.textbox({
-            ...BOX_DEFAULT_OPTIONS,
-            keys: true,
-            mouse: true,
-            inputOnFocus: true,
-            border: {
-                type: 'line',
-            },
-            ...options,
-        });
-
-        this._bind();
+        super(
+            page,
+            blessed.textbox({
+                ...BOX_DEFAULT_OPTIONS,
+                keys: true,
+                inputOnFocus: true,
+                border: {
+                    type: 'line',
+                },
+                ...options,
+            }),
+        );
     }
 
-    getElement() {
-        return this.element;
-    }
-
-    _bind() {
-        // Submit message on enter
+    bind() {
         this.element.key('enter', this.onKeyEnter.bind(this));
+    }
+
+    focus() {
+        this.element.focus();
     }
 
     onKeyEnter() {
@@ -39,6 +32,7 @@ export class MessageInput implements Component {
         const message = this.element.getValue();
         this.element.clearValue();
         this.page.render();
+        this.focus();
 
         // Send message
         this.page.client.sendMessage(message);

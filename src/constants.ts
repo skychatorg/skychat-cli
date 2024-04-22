@@ -14,8 +14,9 @@ export const SCREEN_TITLE = 'SkyChat CLI';
  * Default display for blessed boxes
  */
 export const BOX_DEFAULT_OPTIONS: blessed.Widgets.BoxOptions = {
+    mouse: true,
     scrollable: true,
-    alwaysScroll: true,
+    alwaysScroll: false,
     scrollbar: {
         ch: ' ',
         track: {
