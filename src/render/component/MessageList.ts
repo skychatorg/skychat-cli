@@ -6,8 +6,6 @@ import { Page } from '../page/Page';
 import { renderMessage } from '../helper/message';
 
 export class MessageList extends Component<blessed.Widgets.BoxElement> {
-    static readonly USERNAME_MAX_LEN: number = 16;
-
     protected readonly messages: SanitizedMessage[] = [];
 
     constructor(page: Page, options: Partial<blessed.Widgets.BoxOptions>) {
@@ -16,6 +14,7 @@ export class MessageList extends Component<blessed.Widgets.BoxElement> {
             blessed.box({
                 ...BOX_DEFAULT_OPTIONS,
                 ...options,
+                tags: true,
             }),
         );
 
@@ -23,11 +22,19 @@ export class MessageList extends Component<blessed.Widgets.BoxElement> {
     }
 
     bind() {
-        this.page.client.on('message', this.addMessage.bind(this));
-        this.page.client.on('messages', (messages: SanitizedMessage[]) => {
-            messages.forEach(this.addMessage.bind(this));
-        });
+        this.page.client.on('message', this.onMessage.bind(this));
+        this.page.client.on('messages', this.onMessages.bind(this));
         this.page.client.on('message-edit', this.onMessageEdit.bind(this));
+        this.element.on('resize', this.updateAndRender.bind(this));
+        this.element.on('scroll', this.onScroll.bind(this));
+    }
+
+    onScroll() {
+        const scrollIndex = this.element.getScroll();
+        if (scrollIndex === 0 && this.messages.length > 0) {
+            const lastMessageId = this.messages[0].id;
+            this.page.client.sendMessage(`/messagehistory ${lastMessageId}`);
+        }
     }
 
     onMessageEdit(message: SanitizedMessage) {
@@ -39,35 +46,28 @@ export class MessageList extends Component<blessed.Widgets.BoxElement> {
         this.updateAndRender();
     }
 
-    addMessage(message: SanitizedMessage) {
+    onMessage(message: SanitizedMessage) {
         this.messages.push(message);
         this.updateAndRender();
     }
 
-    messageToLine(message: SanitizedMessage) {
-        // Show all usernames with same length
-        const username = message.user.username
-            .substring(0, MessageList.USERNAME_MAX_LEN)
-            .padStart(MessageList.USERNAME_MAX_LEN);
-
-        // Pad each content additional line with username length
-        const content: string = message.content
-            .split('\n')
-            .map((val: string, index: number) => {
-                if (index === 0) {
-                    return val;
-                }
-                return ' '.repeat(MessageList.USERNAME_MAX_LEN + 3) + val;
-            })
-            .join('\n');
-
-        return `${username} > ${content}`;
+    onMessages(messages: SanitizedMessage[]) {
+        this.messages.unshift(...messages);
+        this.updateAndRender();
     }
 
-    update() {
-        this.element.setContent(this.messages.map((m) => renderMessage(this.element, m)).join('\n'));
+    autoScroll() {
         if (this.messages.length > 0) {
             this.element.scrollTo(this.element.getScrollHeight());
         }
+    }
+
+    update() {
+        this.element.setContent(
+            this.messages
+                .map((message, index) => renderMessage(this.element, message, index === this.messages.length - 1))
+                .join('\n'),
+        );
+        this.autoScroll();
     }
 }

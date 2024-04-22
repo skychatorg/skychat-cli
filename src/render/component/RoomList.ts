@@ -1,8 +1,8 @@
 import blessed from 'blessed';
-import slugify from 'slugify';
 import { BOX_DEFAULT_OPTIONS } from '../../constants';
 import { Component } from './Component';
 import { Page } from '../page/Page';
+import { renderRoom } from '../helper/room';
 
 export class RoomList extends Component<blessed.Widgets.ListElement> {
     constructor(page: Page, options: Partial<blessed.Widgets.ListOptions<blessed.Widgets.ListElementStyle>>) {
@@ -33,12 +33,11 @@ export class RoomList extends Component<blessed.Widgets.ListElement> {
     }
 
     update() {
-        this.element.setItems(
-            this.page.client.state.rooms.map((room) => {
-                // If room is current room, add a star
-                const star = room.id === this.page.client.state.currentRoomId ? '*' : ' ';
-                return `${star} ${slugify(room.name)}`;
-            }),
-        );
+        const { rooms, currentRoom } = this.page.client.state;
+        const items = rooms.map((room) => renderRoom(this.page.client, room));
+        this.element.setItems(items);
+        if (currentRoom) {
+            this.element.select(rooms.findIndex((room) => room.id === currentRoom.id));
+        }
     }
 }

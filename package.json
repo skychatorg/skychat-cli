@@ -16,6 +16,7 @@
     "author": "7PH <b.raymond@protonmail.com>",
     "license": "ISC",
     "dependencies": {
+        "beautify-url": "^0.2.2",
         "blessed": "^0.1.81",
         "fs-extra": "^11.2.0",
         "minimist": "^1.2.8",
