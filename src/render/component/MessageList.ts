@@ -3,31 +3,26 @@ import { BOX_DEFAULT_OPTIONS } from '../../constants';
 import { Component } from './Component';
 import { SanitizedMessage } from 'skychat/build/server';
 import { Page } from '../page/Page';
+import { renderMessage } from '../helper/message';
 
-export class MessageList implements Component {
-    private readonly page: Page;
+export class MessageList extends Component<blessed.Widgets.BoxElement> {
+    static readonly USERNAME_MAX_LEN: number = 16;
 
-    private readonly element: blessed.Widgets.BoxElement;
-
-    private readonly messages: SanitizedMessage[] = [];
+    protected readonly messages: SanitizedMessage[] = [];
 
     constructor(page: Page, options: Partial<blessed.Widgets.BoxOptions>) {
-        this.page = page;
+        super(
+            page,
+            blessed.box({
+                ...BOX_DEFAULT_OPTIONS,
+                ...options,
+            }),
+        );
 
-        this.element = blessed.box({
-            ...BOX_DEFAULT_OPTIONS,
-            mouse: true,
-            ...options,
-        });
-
-        this._bind();
+        this.update();
     }
 
-    getElement() {
-        return this.element;
-    }
-
-    private _bind() {
+    bind() {
         this.page.client.on('message', this.addMessage.bind(this));
         this.page.client.on('messages', (messages: SanitizedMessage[]) => {
             messages.forEach(this.addMessage.bind(this));
@@ -41,21 +36,38 @@ export class MessageList implements Component {
             return;
         }
         this.messages[index] = message;
-        this.render();
+        this.updateAndRender();
     }
 
     addMessage(message: SanitizedMessage) {
         this.messages.push(message);
-        this.render();
+        this.updateAndRender();
     }
 
     messageToLine(message: SanitizedMessage) {
-        return `[${message.user.username}] ${message.content}`;
+        // Show all usernames with same length
+        const username = message.user.username
+            .substring(0, MessageList.USERNAME_MAX_LEN)
+            .padStart(MessageList.USERNAME_MAX_LEN);
+
+        // Pad each content additional line with username length
+        const content: string = message.content
+            .split('\n')
+            .map((val: string, index: number) => {
+                if (index === 0) {
+                    return val;
+                }
+                return ' '.repeat(MessageList.USERNAME_MAX_LEN + 3) + val;
+            })
+            .join('\n');
+
+        return `${username} > ${content}`;
     }
 
-    render() {
-        this.element.setContent(this.messages.map(this.messageToLine).join('\n'));
-        this.element.scrollTo(this.element.getScrollHeight());
-        this.page.render();
+    update() {
+        this.element.setContent(this.messages.map((m) => renderMessage(this.element, m)).join('\n'));
+        if (this.messages.length > 0) {
+            this.element.scrollTo(this.element.getScrollHeight());
+        }
     }
 }

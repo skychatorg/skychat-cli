@@ -29,7 +29,6 @@ export class SkyChatCLI {
     }
 
     private onJoinRoom(roomId: number | null): void {
-        console.log('onJoinRoom', roomId);
         if (roomId === null) {
             this.setPage(CurrentPage.login);
         } else {

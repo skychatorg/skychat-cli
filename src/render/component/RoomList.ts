@@ -4,33 +4,26 @@ import { BOX_DEFAULT_OPTIONS } from '../../constants';
 import { Component } from './Component';
 import { Page } from '../page/Page';
 
-export class RoomList implements Component {
-    private readonly page: Page;
-
-    private readonly element: blessed.Widgets.ListElement;
-
+export class RoomList extends Component<blessed.Widgets.ListElement> {
     constructor(page: Page, options: Partial<blessed.Widgets.ListOptions<blessed.Widgets.ListElementStyle>>) {
-        this.page = page;
+        super(
+            page,
+            blessed.list({
+                ...BOX_DEFAULT_OPTIONS,
+                ...options,
+            }),
+        );
 
-        this.element = blessed.list({
-            ...BOX_DEFAULT_OPTIONS,
-            mouse: true,
-            scrollable: true,
-            alwaysScroll: false,
-            ...options,
-        });
-
-        this._bind();
-        this.render();
+        this.update();
     }
 
     getElement() {
         return this.element;
     }
 
-    _bind() {
-        this.page.client.on('room-list', this.render.bind(this));
-        this.page.client.on('join-room', this.render.bind(this));
+    bind() {
+        this.page.client.on('room-list', this.updateAndRender.bind(this));
+        this.page.client.on('join-room', this.updateAndRender.bind(this));
 
         this.element.on('select', this.onSelect.bind(this));
     }
@@ -39,7 +32,7 @@ export class RoomList implements Component {
         this.page.client.join(this.page.client.state.rooms[index].id);
     }
 
-    render() {
+    update() {
         this.element.setItems(
             this.page.client.state.rooms.map((room) => {
                 // If room is current room, add a star
@@ -47,6 +40,5 @@ export class RoomList implements Component {
                 return `${star} ${slugify(room.name)}`;
             }),
         );
-        this.page.render();
     }
 }
