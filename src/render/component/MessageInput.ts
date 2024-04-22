@@ -21,6 +21,8 @@ export class MessageInput implements Component {
             },
             ...options,
         });
+
+        this._bind();
     }
 
     getElement() {
