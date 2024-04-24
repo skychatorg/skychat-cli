@@ -1,5 +1,6 @@
-import blessed from 'blessed';
 import beautifyUrl from 'beautify-url';
+import { Box, Text } from 'ink';
+import React from 'react';
 import { SanitizedMessage } from 'skychat/build/server';
 
 const USERNAME_MAX_LEN = 16;
@@ -18,15 +19,14 @@ function replaceLinks(text: string) {
     return text.replace(LINK_REGEXP, (_match, p1, fullHref) => `${p1}{underline}${beautifyUrl(fullHref)}{/underline}`);
 }
 
-export function renderMessage(element: blessed.Widgets.BoxElement, message: SanitizedMessage, last: boolean) {
-    const width = element.width as number; // TODO: Why is the cast necessary here?!
+export function renderMessage(width: number, message: SanitizedMessage): React.ReactNode {
     const margin = 6; // Account for scrollbar and horizontal padding
 
     const firstColWidth = USERNAME_MAX_LEN + 4;
     const secondColWidth = width - firstColWidth - margin;
 
     // Format message content
-    let formattedContent = blessed.escape(message.content);
+    let formattedContent = message.content;
     formattedContent = replaceRisiBankStickers(formattedContent);
     formattedContent = replaceLinks(formattedContent);
 
@@ -55,8 +55,11 @@ export function renderMessage(element: blessed.Widgets.BoxElement, message: Sani
         })
         .join('\n');
 
-    // Color
-    const color = last ? '{#555555-bg}' : '';
-
-    return `{/}${color}${username} | ${chunkedContent}`;
+    return (
+        <Box>
+            <Text>{username}</Text>
+            <Text> | </Text>
+            <Text>{chunkedContent}</Text>
+        </Box>
+    );
 }

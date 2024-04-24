@@ -3,6 +3,7 @@
     "version": "0.2.0",
     "description": "Connect to a SkyChat instance using CLI",
     "main": "lib/index.js",
+    "type": "module",
     "files": [
         "bin/**",
         "lib/**",
@@ -12,21 +13,22 @@
         "build": "tsc",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "bin": "./skychat-cli",
+    "bin": "./skychat-cli.cjs",
     "author": "7PH <b.raymond@protonmail.com>",
     "license": "ISC",
     "dependencies": {
         "beautify-url": "^0.2.2",
-        "blessed": "^0.1.81",
         "fs-extra": "^11.2.0",
+        "ink": "^4.4.1",
         "minimist": "^1.2.8",
-        "skychat": "^1.1.0",
+        "react": "^18.2.0",
+        "skychat": "^1.1.1",
         "slugify": "^1.6.6"
     },
     "devDependencies": {
-        "@types/blessed": "^0.1.25",
         "@types/fs-extra": "^11.0.4",
         "@types/minimist": "^1.2.5",
+        "@types/react": "^18.2.79",
         "@typescript-eslint/eslint-plugin": "^7.7.0",
         "@typescript-eslint/parser": "^7.7.0",
         "eslint": "^8.57.0",

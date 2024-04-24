@@ -1,9 +1,9 @@
 import { SkyChatClient } from 'skychat';
-import { getOptions } from './options';
-import { connect, getEndPointUrl } from './skychat';
-import { loadToken } from './token';
-import { SkyChatOption, SkyChatOptions } from './types';
-import { SkyChatCLI } from './render/SkyChatCLI';
+import { getOptions } from './options.js';
+import { connect, getEndPointUrl } from './skychat.js';
+import { loadToken } from './token.js';
+import { SkyChatOption, SkyChatOptions } from './types.js';
+import { renderApp } from './render/index.js';
 
 export async function main() {
     const options = getOptions();
@@ -14,8 +14,7 @@ export async function main() {
 
     await autoConnect(client, options);
 
-    const skyChatCli = new SkyChatCLI(client);
-    skyChatCli.render();
+    renderApp(client);
 }
 
 async function autoConnect(client: SkyChatClient, options: SkyChatOptions) {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const main = require('./lib').main;
+import { main } from './lib/index.js';
 
 (async () => {
     await main();
