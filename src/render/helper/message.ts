@@ -1,6 +1,7 @@
 import blessed from 'blessed';
 import beautifyUrl from 'beautify-url';
 import { SanitizedMessage } from 'skychat/build/server';
+import { RisiBank } from 'risibank-web-api';
 
 const USERNAME_MAX_LEN = 16;
 
@@ -8,10 +9,7 @@ const LINK_REGEXP: RegExp =
     /(^|[ \n]|<br>)((http|https):\/\/[\w?=&./-;#~%+@,[\]:!-]+(?![\w\s?&./;#~%"=+@,[\]:!-]*>))/gi;
 
 function replaceRisiBankStickers(message: string) {
-    return message.replace(
-        /https:\/\/risibank.fr\/cache\/medias\/(\d+)\/(\d+)\/(\d+)\/(\d+)\/(\w+)\.(jpg|jpeg|gif|png)/g,
-        '',
-    );
+    return message.replace(RisiBank.Constants.RISIBANK_URL, '');
 }
 
 function replaceLinks(text: string) {
