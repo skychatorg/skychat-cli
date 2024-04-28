@@ -29,4 +29,8 @@ export abstract class Component<T extends blessed.Widgets.BlessedElement> {
         this.update();
         this.render();
     }
+
+    destroy(): void {
+        this.element.destroy();
+    }
 }
