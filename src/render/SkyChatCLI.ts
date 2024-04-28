@@ -30,6 +30,8 @@ export class SkyChatCLI {
     private _bind(): void {
         this.client.on('join-room', this.onJoinRoom.bind(this));
         this.client.on('auth-token', saveToken);
+
+        this.screen.key(['escape', 'C-c'], () => process.exit(0));
     }
 
     private onJoinRoom(roomId: number | null): void {
@@ -43,6 +45,8 @@ export class SkyChatCLI {
     private setPage(page: CurrentPage): void {
         this.screen.destroy();
         this.screen = blessed.screen({ title: SCREEN_TITLE });
+
+        this.screen.key(['escape', 'C-c'], () => process.exit(0));
 
         switch (page) {
             case CurrentPage.login:

@@ -13,8 +13,8 @@ export class MessageList extends Component<blessed.Widgets.BoxElement> {
             page,
             blessed.box({
                 ...BOX_DEFAULT_OPTIONS,
-                ...options,
                 tags: true,
+                ...options,
             }),
         );
 
