@@ -58,7 +58,7 @@ export function connect(
                 resolve();
             } else if (credentials.mode === 'token') {
                 // Token
-                client.setToken(credentials.token, getAnyAvailableRoom(client).id);
+                client.setToken(credentials.token);
                 resolve();
             } else {
                 // Guest

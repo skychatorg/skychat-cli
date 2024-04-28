@@ -1,8 +1,8 @@
 import { SkyChatClient } from 'skychat';
-import { Page } from './page/Page';
-import { LogInPage } from './page/LogInPage';
-import { ChatPage } from './page/ChatPage';
-import { saveToken } from '../token';
+import { Page } from './page/Page.js';
+import { LogInPage } from './page/LogInPage.js';
+import { ChatPage } from './page/ChatPage.js';
+import { saveToken } from '../token.js';
 
 enum CurrentPage {
     login = 'login',

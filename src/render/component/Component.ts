@@ -1,5 +1,5 @@
 import blessed from 'blessed';
-import { Page } from '../page/Page';
+import { Page } from '../page/Page.js';
 
 export abstract class Component<T extends blessed.Widgets.BlessedElement> {
     protected readonly page: Page;

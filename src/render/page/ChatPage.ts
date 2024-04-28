@@ -1,11 +1,11 @@
 import blessed from 'blessed';
 import { SkyChatClient } from 'skychat';
-import { Page } from './Page';
-import { SCREEN_TITLE } from '../../constants';
-import { MessageList } from '../component/MessageList';
-import { RoomList } from '../component/RoomList';
-import { UserList } from '../component/UserList';
-import { MessageInput } from '../component/MessageInput';
+import { Page } from './Page.js';
+import { SCREEN_TITLE } from '../../constants.js';
+import { MessageList } from '../component/MessageList.js';
+import { RoomList } from '../component/RoomList.js';
+import { UserList } from '../component/UserList.js';
+import { MessageInput } from '../component/MessageInput.js';
 
 export class ChatPage extends Page {
     public static readonly MESSAGE_INPUT_SIZE: number = 3;

@@ -1,7 +1,7 @@
 import blessed from 'blessed';
-import { BOX_DEFAULT_OPTIONS } from '../../constants';
-import { Component } from './Component';
-import { Page } from '../page/Page';
+import { BOX_DEFAULT_OPTIONS } from '../../constants.js';
+import { Component } from './Component.js';
+import { Page } from '../page/Page.js';
 
 export class MessageInput extends Component<blessed.Widgets.TextboxElement> {
     constructor(page: Page, options: Partial<blessed.Widgets.TextboxOptions>) {
