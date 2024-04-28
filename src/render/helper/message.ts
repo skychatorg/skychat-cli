@@ -3,7 +3,7 @@ import beautifyUrl from 'beautify-url';
 import { SanitizedMessage } from 'skychat/build/server';
 import { RisiBank } from 'risibank-web-api';
 
-const USERNAME_MAX_LEN = 16;
+const USERNAME_MAX_LEN = 20;
 
 const LINK_REGEXP: RegExp =
     /(^|[ \n]|<br>)((http|https):\/\/[\w?=&./-;#~%+@,[\]:!-]+(?![\w\s?&./;#~%"=+@,[\]:!-]*>))/gi;
@@ -54,7 +54,5 @@ export function renderMessage(element: blessed.Widgets.BoxElement, message: Sani
         .join('\n');
 
     // Color
-    const color = last ? '{#555555-bg}' : '';
-
-    return `{/}${color}${username} | ${chunkedContent}`;
+    return `{/}${last ? '{#555555-bg}' : ''}${username} | ${chunkedContent}`;
 }

@@ -24,6 +24,8 @@ export class RoomList extends Component<blessed.Widgets.ListElement> {
     bind() {
         this.page.client.on('room-list', this.updateAndRender.bind(this));
         this.page.client.on('join-room', this.updateAndRender.bind(this));
+        this.page.client.on('connected-list', this.updateAndRender.bind(this));
+        this.page.client.on('connected-list-patch', this.updateAndRender.bind(this));
 
         this.element.on('select', this.onSelect.bind(this));
     }

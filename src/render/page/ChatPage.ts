@@ -9,7 +9,7 @@ import { MessageInput } from '../component/MessageInput.js';
 export class ChatPage extends Page {
     public static readonly MESSAGE_INPUT_SIZE: number = 3;
 
-    public static readonly SIDEBAR_WIDTH: number = 24;
+    public static readonly SIDEBAR_WIDTH: number = 32;
 
     private readonly messageList: MessageList;
     private readonly roomList: RoomList;

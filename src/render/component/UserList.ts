@@ -17,14 +17,35 @@ export class UserList extends Component<blessed.Widgets.ListElement> {
     }
 
     bind() {
+        this.page.client.on('typing-list', this.updateAndRender.bind(this));
         this.page.client.on('connected-list', this.updateAndRender.bind(this));
+        this.page.client.on('connected-list-patch', this.updateAndRender.bind(this));
     }
 
     update() {
+        const state = this.page.client.state;
+
         this.element.setItems(
-            this.page.client.state.connectedList.map((connectedUser) => {
-                const star = connectedUser.deadSinceTime ? '~' : ' ';
-                return `${star} ${connectedUser.user.username}`;
+            state.connectedList.map((connectedUser) => {
+                // Typing?
+                const isTyping = state.typingList.find(
+                    (typingUser) => typingUser.username.toLowerCase() === connectedUser.user.username.toLowerCase(),
+                );
+                const typingStr = isTyping ? '…' : ' ';
+
+                // Disconnected users
+                const disconnectedStr = connectedUser.deadSinceTime ? 'x' : null;
+
+                // Username
+                const username = connectedUser.user.username;
+
+                // Last activity
+                const lastActivityMin = Math.floor(
+                    (new Date().getTime() - connectedUser.lastInteractionTime * 1000) / 1000 / 60,
+                );
+                const afkStr = !connectedUser.deadSinceTime && lastActivityMin >= 10 ? '~' : '';
+
+                return [typingStr, disconnectedStr, username, afkStr].filter(Boolean).join(' ');
             }),
         );
     }
