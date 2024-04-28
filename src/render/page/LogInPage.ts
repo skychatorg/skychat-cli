@@ -1,19 +1,13 @@
 import blessed from 'blessed';
-import { BOX_DEFAULT_OPTIONS, SCREEN_TITLE } from '../../constants.js';
+import { BOX_DEFAULT_OPTIONS } from '../../constants.js';
 import { Page } from './Page.js';
 import { SkyChatClient } from 'skychat';
 
 export class LogInPage extends Page {
     static readonly MARGIN = 5;
 
-    private screen: blessed.Widgets.Screen;
-
-    constructor(client: SkyChatClient) {
-        super(client);
-
-        this.screen = blessed.screen({
-            title: SCREEN_TITLE,
-        });
+    constructor(client: SkyChatClient, screen: blessed.Widgets.Screen) {
+        super(client, screen);
 
         this.screen.append(
             blessed.box({
@@ -37,9 +31,5 @@ export class LogInPage extends Page {
 
     render() {
         this.screen.render();
-    }
-
-    destroy() {
-        this.screen.destroy();
     }
 }

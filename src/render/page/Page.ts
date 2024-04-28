@@ -1,16 +1,14 @@
+import blessed from 'blessed';
 import { SkyChatClient } from 'skychat';
 
 export abstract class Page {
-    protected readonly _client: SkyChatClient;
+    public readonly client: SkyChatClient;
+    protected readonly screen: blessed.Widgets.Screen;
 
-    constructor(client: SkyChatClient) {
-        this._client = client;
-    }
-
-    get client(): SkyChatClient {
-        return this._client;
+    constructor(client: SkyChatClient, screen: blessed.Widgets.Screen) {
+        this.client = client;
+        this.screen = screen;
     }
 
     render(): void {}
-    destroy(): void {}
 }

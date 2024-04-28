@@ -3,6 +3,8 @@ import { Page } from './page/Page.js';
 import { LogInPage } from './page/LogInPage.js';
 import { ChatPage } from './page/ChatPage.js';
 import { saveToken } from '../token.js';
+import blessed from 'blessed';
+import { SCREEN_TITLE } from '../constants.js';
 
 enum CurrentPage {
     login = 'login',
@@ -11,13 +13,15 @@ enum CurrentPage {
 
 export class SkyChatCLI {
     private readonly client: SkyChatClient;
+    private screen: blessed.Widgets.Screen;
 
     private currentPage: Page;
 
     constructor(client: SkyChatClient) {
         this.client = client;
+        this.screen = blessed.screen({ title: SCREEN_TITLE });
 
-        this.currentPage = new LogInPage(client);
+        this.currentPage = new LogInPage(client, this.screen);
         this.render();
 
         this._bind();
@@ -37,14 +41,15 @@ export class SkyChatCLI {
     }
 
     private setPage(page: CurrentPage): void {
-        this.currentPage.destroy();
+        this.screen.destroy();
+        this.screen = blessed.screen({ title: SCREEN_TITLE });
 
         switch (page) {
             case CurrentPage.login:
-                this.currentPage = new LogInPage(this.client);
+                this.currentPage = new LogInPage(this.client, this.screen);
                 break;
             case CurrentPage.chat:
-                this.currentPage = new ChatPage(this.client);
+                this.currentPage = new ChatPage(this.client, this.screen);
                 break;
         }
 
@@ -53,9 +58,5 @@ export class SkyChatCLI {
 
     render(): void {
         this.currentPage.render();
-    }
-
-    destroy(): void {
-        this.currentPage.destroy();
     }
 }

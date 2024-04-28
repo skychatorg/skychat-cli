@@ -1,7 +1,6 @@
 import blessed from 'blessed';
 import { SkyChatClient } from 'skychat';
 import { Page } from './Page.js';
-import { SCREEN_TITLE } from '../../constants.js';
 import { MessageList } from '../component/MessageList.js';
 import { RoomList } from '../component/RoomList.js';
 import { UserList } from '../component/UserList.js';
@@ -12,17 +11,13 @@ export class ChatPage extends Page {
 
     public static readonly SIDEBAR_WIDTH: number = 24;
 
-    private readonly screen: blessed.Widgets.Screen;
-
     private readonly messageList: MessageList;
     private readonly roomList: RoomList;
     private readonly userList: UserList;
     private readonly messageInput: MessageInput;
 
-    constructor(client: SkyChatClient) {
-        super(client);
-
-        this.screen = blessed.screen({ title: SCREEN_TITLE });
+    constructor(client: SkyChatClient, screen: blessed.Widgets.Screen) {
+        super(client, screen);
 
         this.messageList = new MessageList(this, {
             width: `100%-${ChatPage.SIDEBAR_WIDTH}`,
@@ -59,9 +54,5 @@ export class ChatPage extends Page {
 
     render(): void {
         this.screen.render();
-    }
-
-    destroy(): void {
-        this.screen.destroy();
     }
 }
