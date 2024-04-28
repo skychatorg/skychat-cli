@@ -1,6 +1,6 @@
 import minimist from 'minimist';
-import { ENV_PREFIX } from './constants';
-import { SkyChatOption, SkyChatOptions } from './types';
+import { ENV_PREFIX } from './constants.js';
+import { SkyChatOption, SkyChatOptions } from './types.js';
 
 function getDefaultOptions(): SkyChatOptions {
     return {
@@ -19,9 +19,7 @@ function getEnvOptions(): Partial<SkyChatOptions> {
             continue;
         }
 
-        const option = key
-            .slice(ENV_PREFIX.length)
-            .toLowerCase() as keyof SkyChatOptions;
+        const option = key.slice(ENV_PREFIX.length).toLowerCase() as keyof SkyChatOptions;
 
         options[option] = process.env[key]!;
     }

@@ -1,6 +1,6 @@
 import blessed from 'blessed';
-import { BOX_DEFAULT_OPTIONS, SCREEN_TITLE } from '../../constants';
-import { Page } from './Page';
+import { BOX_DEFAULT_OPTIONS, SCREEN_TITLE } from '../../constants.js';
+import { Page } from './Page.js';
 import { SkyChatClient } from 'skychat';
 
 export class LogInPage extends Page {

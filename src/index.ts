@@ -1,9 +1,9 @@
 import { SkyChatClient } from 'skychat';
-import { getOptions } from './options';
-import { connect, getEndPointUrl } from './skychat';
-import { loadToken } from './token';
-import { SkyChatOption, SkyChatOptions } from './types';
-import { SkyChatCLI } from './render/SkyChatCLI';
+import { getOptions } from './options.js';
+import { connect, getEndPointUrl } from './skychat.js';
+import { loadToken } from './token.js';
+import { SkyChatOption, SkyChatOptions } from './types.js';
+import { SkyChatCLI } from './render/SkyChatCLI.js';
 
 export async function main() {
     const options = getOptions();
