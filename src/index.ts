@@ -1,16 +1,18 @@
 import { SkyChatClient } from 'skychat';
 import { getOptions } from './options.js';
+import { SkyChatCLI } from './render/SkyChatCLI.js';
 import { connect, getEndPointUrl } from './skychat.js';
 import { loadToken } from './token.js';
 import { SkyChatOption, SkyChatOptions } from './types.js';
-import { SkyChatCLI } from './render/SkyChatCLI.js';
 
 export async function main() {
     const options = getOptions();
 
     // Build the endpoint URL & initialize the SkyChatCLI
     const url = getEndPointUrl(options[SkyChatOption.Protocol], options[SkyChatOption.Host]);
-    const client = new SkyChatClient(url);
+    const client = new SkyChatClient(url, {
+        autoMessageAck: true,
+    });
 
     await autoConnect(client, options);
 
