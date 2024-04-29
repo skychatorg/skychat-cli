@@ -4,7 +4,8 @@ import slugify from 'slugify';
 
 export function renderRoom(client: SkyChatClient, room: SanitizedRoom) {
     // If room is current room, add a star
-    const starStr = room.id === client.state.currentRoomId ? '*' : ' ';
+    const isCurrentRoom = room.id === client.state.currentRoomId;
+    const currentRoomStr = isCurrentRoom ? '*' : ' ';
 
     // Connected count
     const userCount = client.state.roomConnectedUsers[room.id]?.length ?? 0;
@@ -18,5 +19,5 @@ export function renderRoom(client: SkyChatClient, room: SanitizedRoom) {
     const name = slugify(room.name) || others.join(', ') || '- no one -';
 
     // Return the final string
-    return [starStr, privateRoomStr, name, userCountStr].filter(Boolean).join(' ');
+    return [currentRoomStr, privateRoomStr, name, userCountStr].filter(Boolean).join(' ');
 }

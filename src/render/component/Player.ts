@@ -1,7 +1,7 @@
 import blessed from 'blessed';
-import { BOX_DEFAULT_OPTIONS, CHAT_PLAYER_PROGRESSBAR_WIDTH } from '../../constants.js';
-import { Component } from './Component.js';
+import { BOX_DEFAULT_OPTIONS, CHAT_PLAYER_HEIGHT, CHAT_PLAYER_PROGRESSBAR_WIDTH } from '../../constants.js';
 import { Page } from '../page/Page.js';
+import { Component } from './Component.js';
 
 export class Player extends Component<blessed.Widgets.BoxElement> {
     private readonly progressBar: blessed.Widgets.ProgressBarElement;
@@ -14,21 +14,21 @@ export class Player extends Component<blessed.Widgets.BoxElement> {
             page,
             blessed.box({
                 ...BOX_DEFAULT_OPTIONS,
-                border: undefined,
-                bg: undefined,
                 ...options,
+                border: undefined,
             }),
         );
 
         this.infoText = blessed.text({
             content: 'No media playing',
             width: `100%-${CHAT_PLAYER_PROGRESSBAR_WIDTH}`,
+            height: CHAT_PLAYER_HEIGHT,
         });
 
         this.progressBar = blessed.progressbar({
             orientation: 'horizontal',
             filled: 0,
-            height: 1,
+            height: CHAT_PLAYER_HEIGHT,
             right: 0,
             width: CHAT_PLAYER_PROGRESSBAR_WIDTH,
             style: {
@@ -60,10 +60,10 @@ export class Player extends Component<blessed.Widgets.BoxElement> {
         const duration = currentMedia.video.duration ?? 0;
         const currentTime = Date.now() - startTime;
         const progress = (currentTime / duration) * 100;
-        const remaining = Math.floor((duration - currentTime) / 1000);
+        const remaining = Math.max(0, Math.floor((duration - currentTime) / 1000));
         this.progressBar.setProgress(progress);
         this.progressBar.setContent(` ${remaining}s`);
-        this.infoText.setContent(`${'~'.repeat(4)} ${currentMedia.video.type} / ${currentMedia.video.title}`);
+        this.infoText.setContent(`\n${'~'.repeat(4)} ${currentMedia.video.type} / ${currentMedia.video.title}`);
     }
 
     destroy() {

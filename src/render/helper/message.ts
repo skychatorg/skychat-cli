@@ -1,15 +1,16 @@
-import blessed from 'blessed';
 import beautifyUrl from 'beautify-url';
-import { SanitizedMessage } from 'skychat/build/server';
+import blessed from 'blessed';
 import { RisiBank } from 'risibank-web-api';
+import { SanitizedMessage } from 'skychat/build/server';
+import { CHAT_BG_CONTRAST_COLOR } from '../../constants.js';
 
-const USERNAME_MAX_LEN = 20;
+const USERNAME_MAX_LEN = 12;
 
 const LINK_REGEXP: RegExp =
     /(^|[ \n]|<br>)((http|https):\/\/[\w?=&./-;#~%+@,[\]:!-]+(?![\w\s?&./;#~%"=+@,[\]:!-]*>))/gi;
 
 function replaceRisiBankStickers(message: string) {
-    return message.replace(RisiBank.Constants.RISIBANK_URL, '');
+    return message.replace(RisiBank.Constants.RISIBANK_CACHE_REGEX, '');
 }
 
 function replaceLinks(text: string) {
@@ -54,5 +55,6 @@ export function renderMessage(element: blessed.Widgets.BoxElement, message: Sani
         .join('\n');
 
     // Color
-    return `{/}${last ? '{#555555-bg}' : ''}${username} | ${chunkedContent}`;
+    const color = last ? `{${CHAT_BG_CONTRAST_COLOR}-bg}` : '';
+    return `{/}${color}${username} | ${chunkedContent}`;
 }

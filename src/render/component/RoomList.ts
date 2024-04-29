@@ -1,5 +1,5 @@
 import blessed from 'blessed';
-import { BOX_DEFAULT_OPTIONS } from '../../constants.js';
+import { LIST_DEFAULT_OPTIONS } from '../../constants.js';
 import { Component } from './Component.js';
 import { Page } from '../page/Page.js';
 import { renderRoom } from '../helper/room.js';
@@ -9,8 +9,9 @@ export class RoomList extends Component<blessed.Widgets.ListElement> {
         super(
             page,
             blessed.list({
-                ...BOX_DEFAULT_OPTIONS,
+                ...LIST_DEFAULT_OPTIONS,
                 ...options,
+                tags: true,
             }),
         );
 
