@@ -1,9 +1,9 @@
 import blessed from 'blessed';
-import { BOX_DEFAULT_OPTIONS } from '../../constants.js';
-import { Component } from './Component.js';
 import { SanitizedMessage } from 'skychat/build/server';
-import { Page } from '../page/Page.js';
+import { BOX_DEFAULT_OPTIONS } from '../../constants.js';
 import { renderMessage } from '../helper/message.js';
+import { Page } from '../page/Page.js';
+import { Component } from './Component.js';
 
 export class MessageList extends Component<blessed.Widgets.BoxElement> {
     protected readonly messages: SanitizedMessage[] = [];

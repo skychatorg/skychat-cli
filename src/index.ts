@@ -1,9 +1,12 @@
 import { SkyChatClient } from 'skychat';
 import { getOptions } from './options.js';
 import { SkyChatCLI } from './render/SkyChatCLI.js';
-import { connect, getEndPointUrl } from './skychat.js';
 import { loadToken } from './token.js';
 import { SkyChatOption, SkyChatOptions } from './types.js';
+
+export function getEndPointUrl(protocol: string, host: string): string {
+    return `${protocol}://${host}/ws`;
+}
 
 export async function main() {
     const options = getOptions();
@@ -21,25 +24,24 @@ export async function main() {
 }
 
 async function autoConnect(client: SkyChatClient, options: SkyChatOptions) {
+    // Wait for the client to connect
+    await new Promise<void>((resolve) => {
+        client.connect();
+        client.once('update', resolve);
+    });
+
     if (options[SkyChatOption.User] && options[SkyChatOption.Password]) {
-        await connect(client, {
-            mode: 'credentials',
-            user: options[SkyChatOption.User],
-            password: options[SkyChatOption.Password],
-        });
+        client.login(options[SkyChatOption.User], options[SkyChatOption.Password]);
         return;
     }
 
     const token = await loadToken();
     if (token) {
-        await connect(client, {
-            mode: 'token',
+        client.authenticate({
             token,
         });
         return;
     }
 
-    await connect(client, {
-        mode: 'guest',
-    });
+    client.authAsGuest();
 }

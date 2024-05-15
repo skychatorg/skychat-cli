@@ -1,10 +1,10 @@
-import { SkyChatClient } from 'skychat';
-import { Page } from './page/Page.js';
-import { LogInPage } from './page/LogInPage.js';
-import { ChatPage } from './page/ChatPage.js';
-import { saveToken } from '../token.js';
 import blessed from 'blessed';
+import { SkyChatClient } from 'skychat';
 import { SCREEN_TITLE } from '../constants.js';
+import { saveToken } from '../token.js';
+import { ChatPage } from './page/ChatPage.js';
+import { LogInPage } from './page/LogInPage.js';
+import { Page } from './page/Page.js';
 
 enum CurrentPage {
     login = 'login',
@@ -22,7 +22,6 @@ export class SkyChatCLI {
         this.screen = blessed.screen({ title: SCREEN_TITLE });
 
         this.currentPage = new LogInPage(client, this.screen);
-        this.render();
 
         this._bind();
     }
