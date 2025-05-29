@@ -5,7 +5,7 @@ import { loadToken } from './token.js';
 import { SkyChatOption, SkyChatOptions } from './types.js';
 
 export function getEndPointUrl(protocol: string, host: string): string {
-    return `${protocol}://${host}/ws`;
+    return `${protocol}://${host}/api/ws`;
 }
 
 export async function main() {
@@ -16,6 +16,7 @@ export async function main() {
     const client = new SkyChatClient(url, {
         autoMessageAck: true,
     });
+    console.log(`Connecting to SkyChat at ${url}...`);
 
     await autoConnect(client, options);
 
