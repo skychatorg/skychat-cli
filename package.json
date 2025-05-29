@@ -1,6 +1,6 @@
 {
     "name": "skychat-cli",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "description": "Connect to a SkyChat instance using CLI",
     "main": "lib/index.js",
     "type": "module",
