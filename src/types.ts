@@ -3,6 +3,7 @@ export enum SkyChatOption {
     Host = 'host',
     User = 'user',
     Password = 'password',
+    TokenDir = 'tokenDir',
 }
 
 export type SkyChatOptions = {
